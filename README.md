@@ -75,3 +75,7 @@ test/              单元测试 + mock 服务器 + CDP 端到端
 ## License
 
 MIT
+
+## 🔗 友链
+
+- [LinuxDo](https://linux.do) — 高质量的Linux中文社区
