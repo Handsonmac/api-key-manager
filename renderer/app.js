@@ -22,6 +22,8 @@ const ICONS = {
 
 const $ = (sel) => document.querySelector(sel);
 
+const SAVE_KBD = /Mac|iPhone|iPad/.test(navigator.platform || "") ? "⌘S" : "Ctrl+S";
+
 
 let providers = []; // 已保存的供应商
 let draft = null;   // 正在编辑的工作副本
@@ -223,7 +225,7 @@ function editorHTML() {
         <div class="editor-actions">
           <span class="dirty-dot" id="dirty-dot" hidden>● 未保存</span>
           <button class="btn ghost danger" id="btn-delete">删除</button>
-          <button class="btn primary" id="btn-save">保存<kbd>⌘S</kbd></button>
+          <button class="btn primary" id="btn-save">保存<kbd>${SAVE_KBD}</kbd></button>
         </div>
       </header>
       <div class="editor-body">

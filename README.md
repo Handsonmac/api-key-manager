@@ -21,6 +21,29 @@ macOS 桌面应用：集中管理 AI 模型供应商的 API Key、Base URL 与�
 - 数据文件位于 `~/Library/Application Support/API Key Manager/providers.json`，**不在本仓库内**
 - 仓库不含任何真实 Key，测试使用本地 mock 服务器与 `sk-test` 假 Key
 
+## 跨平台（Windows / Linux）
+
+应用本身基于 Electron，Windows / Linux 开箱即用（快捷键为 `Ctrl+S`）：
+
+```bash
+# Windows 上构建（PowerShell）
+git clone https://github.com/Handsonmac/api-key-manager.git
+cd api-key-manager
+npm install
+npm run pack          # 产出 dist\API Key Manager-win32-x64\API Key Manager.exe
+
+# Linux 上构建
+npm run pack          # 产出 dist/API Key Manager-linux-x64/
+```
+
+在 macOS 上可以交叉打包 Linux（`npm run pack:linux`）；交叉打包 **Windows 必须先安装 Wine**（electron-packager 会无条件把版本信息写进 exe 元数据），未安装时 `pack:win` 会快速失败并提示——**正式的 Windows 版请直接在 Windows 上原生打包**（见上方步骤）。
+
+**跨机器迁移数据（重要）**：API Key 在 macOS 用 Keychain、Windows 用 DPAPI 加密，**直接拷贝 `providers.json` 到另一台机器会全部提示"Key 无法解密"**。正确做法：
+
+1. 旧机器：侧栏「导出」→ 勾选 **包含 API Key（明文）** → 保存 JSON
+2. 通过安全渠道把 JSON 传到新机器（注意这是明文 Key，传输后建议删除）
+3. 新机器：侧栏「导入」→ 选择该 JSON → 自动合并并**用本机加密体系重新加密存储**
+
 ## 开发
 
 ```bash
@@ -28,7 +51,9 @@ npm install          # Electron 40.10.2（见下方备注）
 npm start            # 启动开发实例
 npm test             # 单元测试（数据迁移 / 导入解析 / 模型获取）
 npm run test:e2e     # 端到端测试（CDP 驱动真实应用，含 mock 服务器）
-npm run pack         # 打包 macOS app 到 dist/
+npm run pack         # 打包当前平台到 dist/（自动选择 icns/ico/png 图标）
+npm run pack:win     # 交叉打包 Windows
+npm run pack:linux   # 交叉打包 Linux
 ```
 
 > 备注：本项目在 Electron 40.10.2 上开发，`npm install` 若因网络拉不下新版 Electron，可手动解压缓存中的 v40 zip 到 `node_modules/electron/dist/`。

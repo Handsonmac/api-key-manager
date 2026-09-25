@@ -11,6 +11,14 @@ const http = require('http');
 const ROOT = path.join(__dirname, '..');
 // 每次运行用随机 CDP 端口，避免上次残留的僵尸进程占用固定端口
 const CDP_PORT = 9342 + Math.floor(Math.random() * 400);
+const IS_MAC = process.platform === 'darwin';
+const IS_WIN = process.platform === 'win32';
+// 各平台 Electron 开发二进制路径
+const ELECTRON_BIN = IS_MAC
+  ? path.join(ROOT, 'node_modules', 'electron', 'dist', 'Electron.app', 'Contents', 'MacOS', 'Electron')
+  : IS_WIN
+    ? path.join(ROOT, 'node_modules', 'electron', 'dist', 'Electron.exe')
+    : path.join(ROOT, 'node_modules', 'electron', 'dist', 'electron');
 const DATA_DIR = fs.mkdtempSync(path.join(os.tmpdir(), 'akm-e2e-'));
 const SHOT_DIR = path.join(ROOT, 'test', 'screenshots');
 
@@ -121,7 +129,11 @@ async function getTarget(retries = 25) {
 }
 
 async function launchElectron() {
-  try { execSync('pkill -9 -f "api-key-manager/node_modules/electron" 2>/dev/null || true'); } catch (_) {}
+  if (!IS_WIN) {
+    try { execSync('pkill -9 -f "api-key-manager/node_modules/electron" 2>/dev/null || true'); } catch (_) {}
+  } else {
+    console.log('  （Windows：跳过启动前清理，依赖随机 CDP 端口避让）');
+  }
   // 确认 CDP 端口已释放，最多等 3 秒
   for (let i = 0; i < 6; i++) {
     const busy = await new Promise((resolve) => {
@@ -134,7 +146,7 @@ async function launchElectron() {
   }
   await sleep(300);
   electronProc = spawn(
-    path.join(ROOT, 'node_modules', 'electron', 'dist', 'Electron.app', 'Contents', 'MacOS', 'Electron'),
+    ELECTRON_BIN,
     [ROOT, `--remote-debugging-port=${CDP_PORT}`],
     { cwd: ROOT, env: { ...process.env, AKM_DATA_DIR: DATA_DIR }, stdio: ['ignore', 'pipe', 'pipe'] }
   );
@@ -160,7 +172,7 @@ async function killElectron() {
     const finish = () => { if (!done) { done = true; clearTimeout(timer); r(); } };
     const timer = setTimeout(() => {
       try { if (!proc.killed) proc.kill('SIGKILL'); } catch (_) {}
-      execSync(`pkill -9 -f "remote-debugging-port=${CDP_PORT}" 2>/dev/null || true`);
+      if (!IS_WIN) execSync(`pkill -9 -f "remote-debugging-port=${CDP_PORT}" 2>/dev/null || true`);
       finish();
     }, 3000);
     proc.once('exit', finish);
