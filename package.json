@@ -1,0 +1,21 @@
+{
+  "name": "api-key-manager",
+  "productName": "API Key Manager",
+  "version": "1.1.0",
+  "description": "记录模型供应商的 API Key / Base URL / 模型列表，支持多 Key、健康检测、导入导出与自动获取模型",
+  "main": "main.js",
+  "author": "handsonmac",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "test": "node test/model.test.js && node test/import.test.js && node test/test-fetch.js",
+    "test:e2e": "node test/e2e-simple.js",
+    "serve-mock": "node test/mock-server.js",
+    "pack": "electron-packager . \"API Key Manager\" --overwrite --platform=darwin --arch=x64 --icon=build/icon.icns --out=dist --app-version=1.1.0 --prune=true --ignore=test",
+    "start:dev": "python3 -m http.server 18925 --directory renderer & ELECTRON_RENDERER_URL=http://127.0.0.1:18925/index.html node main.js"
+  },
+  "devDependencies": {
+    "electron": "40.10.2",
+    "electron-packager": "^17.1.2"
+  }
+}

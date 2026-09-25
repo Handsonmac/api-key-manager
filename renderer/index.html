@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>API Key 管理器</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <aside class="sidebar">
+      <div class="sidebar-head">
+        <div class="logo"><span class="logo-icon">🔑</span>API Key 管理器</div>
+        <button id="btn-add" class="btn primary block">＋ 添加供应商</button>
+        <input id="search" type="search" placeholder="搜索名称 / URL / 模型…" spellcheck="false">
+      </div>
+      <nav id="provider-list" class="provider-list"></nav>
+      <div class="sidebar-foot">
+        <div class="foot-actions">
+          <button class="btn" id="btn-check-all" title="检测所有供应商的所有 Key 可用性">⚡ 检测全部</button>
+          <button class="btn" id="btn-import" title="从 JSON / 文本 / .env 导入">导入</button>
+          <button class="btn" id="btn-export" title="导出为 JSON 备份">导出</button>
+        </div>
+        <div id="sidebar-foot-text"></div>
+      </div>
+    </aside>
+    <main id="main"></main>
+  </div>
+  <div id="modal-root" hidden>
+    <div class="modal-box" id="modal-box"></div>
+  </div>
+  <div id="toast" class="toast" hidden></div>
+
+<script src="../lib/import.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
